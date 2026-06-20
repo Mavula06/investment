@@ -25,10 +25,10 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Make the first user (Bruno) the default admin
 -- This is allowed since no admins exist yet
-UPDATE profiles SET is_admin = TRUE WHERE id = 'ec29edfb-ea62-49cd-b730-fbaa660e1bd2';
+UPDATE profiles SET is_admin = TRUE WHERE email = 'mahlalela06@yahoo.com';
 
 -- Update the profile name if needed
-UPDATE profiles SET full_name = 'Admin Bruno' WHERE id = 'ec29edfb-ea62-49cd-b730-fbaa660e1bd2';
+UPDATE profiles SET full_name = 'lateowell' WHERE email = 'mahlalela06@yahoo.com';
 
 -- Add a note about the default admin credentials
-COMMENT ON TABLE profiles IS 'Default admin account: sellbymeng@outlook.com (already registered) - made admin on first deployment';
+COMMENT ON TABLE profiles IS 'Default admin account: mahlalela06@yahoo.com (already registered) - made admin on first deployment';
