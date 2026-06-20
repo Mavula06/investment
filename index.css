@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-dark-600;
+  }
+
+  body {
+    @apply bg-dark-900 text-white antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-dark-800 border border-dark-600 rounded-2xl p-6 transition-all duration-300;
+  }
+
+  .card-hover {
+    @apply hover:border-gold-500/30 hover:shadow-lg hover:shadow-gold-500/5;
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-gold-500 to-gold-600 text-dark-900 font-semibold px-6 py-3 rounded-xl
+           hover:from-gold-400 hover:to-gold-500 transition-all duration-300 shadow-lg shadow-gold-500/25;
+  }
+
+  .btn-secondary {
+    @apply bg-dark-700 border border-dark-500 text-white font-medium px-6 py-3 rounded-xl
+           hover:bg-dark-600 hover:border-gold-500/50 transition-all duration-300;
+  }
+
+  .input-field {
+    @apply w-full bg-dark-700 border border-dark-500 rounded-xl px-4 py-3 text-white
+           placeholder:text-gray-500 focus:outline-none focus:border-gold-500/50 focus:ring-1 focus:ring-gold-500/20
+           transition-all duration-300;
+  }
+
+  .stat-card {
+    @apply relative overflow-hidden rounded-2xl bg-gradient-to-br from-dark-800 to-dark-700 p-6 border border-dark-600;
+  }
+
+  .plan-card {
+    @apply relative overflow-hidden rounded-2xl bg-dark-800 p-6 border border-dark-600 transition-all duration-500
+           hover:scale-[1.02] hover:border-gold-500/40 hover:shadow-xl hover:shadow-gold-500/10;
+  }
+
+  .plan-card::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-br from-gold-500/5 to-transparent opacity-0 transition-opacity duration-500;
+  }
+
+  .plan-card:hover::before {
+    @apply opacity-100;
+  }
+
+  .glow {
+    @apply absolute -z-10 w-[500px] h-[500px] rounded-full blur-[100px] opacity-20;
+  }
+
+  .text-gradient-gold {
+    @apply bg-gradient-to-r from-gold-400 via-gold-500 to-gold-600 bg-clip-text text-transparent;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    @apply bg-dark-800 rounded-full;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-dark-600 rounded-full hover:bg-dark-500;
+  }
+
+  .animate-delay-100 {
+    animation-delay: 100ms;
+  }
+
+  .animate-delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .animate-delay-300 {
+    animation-delay: 300ms;
+  }
+
+  .animate-delay-400 {
+    animation-delay: 400ms;
+  }
+}
