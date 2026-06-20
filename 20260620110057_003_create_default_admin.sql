@@ -1,34 +1,65 @@
--- Update the check_admin_privileges function to allow first admin creation
+-- 003_create_default_admin.sql
+-- Owner/Admin system without hard-coded accounts
+
+ALTER TABLE profiles
+ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'user';
+
+ALTER TABLE profiles
+ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE;
+
+CREATE OR REPLACE FUNCTION is_admin_user()
+RETURNS BOOLEAN
+LANGUAGE SQL
+STABLE
+AS $$
+SELECT EXISTS (
+SELECT 1
+FROM profiles
+WHERE id = auth.uid()
+AND is_admin = TRUE
+);
+$$;
+
+CREATE OR REPLACE FUNCTION is_owner()
+RETURNS BOOLEAN
+LANGUAGE SQL
+STABLE
+AS $$
+SELECT EXISTS (
+SELECT 1
+FROM profiles
+WHERE id = auth.uid()
+AND role = 'owner'
+);
+$$;
+
 CREATE OR REPLACE FUNCTION check_admin_privileges()
 RETURNS TRIGGER AS $$
-DECLARE
-  admin_count INTEGER;
 BEGIN
-  -- If trying to set is_admin to true
-  IF NEW.is_admin = TRUE AND (OLD.is_admin = FALSE OR OLD IS NULL) THEN
-    -- Count existing admins
-    SELECT COUNT(*) INTO admin_count FROM profiles WHERE is_admin = TRUE;
-    
-    -- If no admins exist yet, allow it (bootstrap first admin)
-    IF admin_count = 0 THEN
-      RETURN NEW;
-    END IF;
-    
-    -- Otherwise, check if the current user is an admin
-    IF NOT is_admin(auth.uid()) THEN
-      RAISE EXCEPTION 'Only admins can create new admins';
-    END IF;
-  END IF;
-  RETURN NEW;
+IF NEW.is_admin = TRUE
+AND COALESCE(OLD.is_admin,FALSE) = FALSE THEN
+
+ IF NOT EXISTS (
+   SELECT 1
+   FROM profiles
+   WHERE id = auth.uid()
+     AND role = 'owner'
+ ) THEN
+   RAISE EXCEPTION 'Only the owner can create admins';
+ END IF;
+
+END IF;
+
+RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Make the first user (Bruno) the default admin
--- This is allowed since no admins exist yet
-UPDATE profiles SET is_admin = TRUE WHERE email = 'mahlalela06@yahoo.com';
+DROP TRIGGER IF EXISTS enforce_admin_privileges ON profiles;
 
--- Update the profile name if needed
-UPDATE profiles SET full_name = 'lateowell' WHERE email = 'mahlalela06@yahoo.com';
+CREATE TRIGGER enforce_admin_privileges
+BEFORE UPDATE ON profiles
+FOR EACH ROW
+EXECUTE FUNCTION check_admin_privileges();
 
--- Add a note about the default admin credentials
-COMMENT ON TABLE profiles IS 'Default admin account: mahlalela06@yahoo.com (already registered) - made admin on first deployment';
+COMMENT ON TABLE profiles IS
+'Owner/Admin role system enabled';
