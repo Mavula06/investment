@@ -1,5 +1,4 @@
 -- 003_create_default_admin.sql
--- Owner/Admin system without hard-coded accounts
 
 ALTER TABLE profiles
 ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'user';
@@ -35,17 +34,27 @@ $$;
 
 CREATE OR REPLACE FUNCTION check_admin_privileges()
 RETURNS TRIGGER AS $$
+DECLARE
+owner_count INTEGER;
 BEGIN
+
+SELECT COUNT(*)
+INTO owner_count
+FROM profiles
+WHERE role = 'owner';
+
 IF NEW.is_admin = TRUE
 AND COALESCE(OLD.is_admin,FALSE) = FALSE THEN
 
- IF NOT EXISTS (
-   SELECT 1
-   FROM profiles
-   WHERE id = auth.uid()
-     AND role = 'owner'
- ) THEN
-   RAISE EXCEPTION 'Only the owner can create admins';
+ IF owner_count > 0 THEN
+   IF NOT EXISTS (
+     SELECT 1
+     FROM profiles
+     WHERE id = auth.uid()
+       AND role = 'owner'
+   ) THEN
+     RAISE EXCEPTION 'Only the owner can create admins';
+   END IF;
  END IF;
 
 END IF;
