@@ -1,8 +1,8 @@
 -- Add payment gateway support for African payments (Paystack)
 -- Payment methods table for storing user payment accounts
-CREATE TABLE payment_methods (
+CREATE TABLE yoco_transaction (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
   type VARCHAR(50) NOT NULL, -- 'card', 'bank_account', 'mobile_money'
   provider VARCHAR(50), -- 'paystack', 'flutterwave', etc.
   provider_reference VARCHAR(255), -- Reference from payment provider
